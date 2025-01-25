@@ -1,36 +1,50 @@
 import React, { useEffect } from 'react';
-import { Card, CardContent, Typography, Skeleton, Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useGetPostsQuery } from '../../services/post.api';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { addPost } from '../../store/reducers/postReducer';
 import PostSkeleton from '../../component/postSkeleton';
-import PostBlock from '../../component/postBlock';
+import PostCard from '../../component/postCard';
 
 interface Post {
   id: number;
-  title?: string;
+  mediaUrl?: string;
   content: string;
   like: {
     total: number;
     data: {
-      [id: string]: string;
-    };
+      _id: number;
+      userId: {
+        _id: number;
+      };
+      postId: {
+        _id: number;
+      }[];
+    }[];
   };
   comment: {
     total: number;
     data: {
-      [id: string]: string;
-    };
+      id: string;
+      content: string;
+      userId: {
+        id: number;
+        username: string;
+      };
+    }[];
   };
-  user:{  }
+  user: {
+    id: string;
+    username: string;
+  };
 }
 
 const PostList: React.FC = () => {
-  const { data: posts, error, isLoading } = useGetPostsQuery(undefined);
+  const { data: posts, error, isLoading, refetch } = useGetPostsQuery(undefined);
   const dispatch = useAppDispatch();
-  const storedPosts = useAppSelector((state) => state.post.posts); // Assuming `state.post.posts` contains stored posts
+  const storedPosts = useAppSelector((state) => state.post.posts);
 
-  // Dispatch posts to the store when the data is available
+  // Dispatch posts to the store when data is available
   useEffect(() => {
     if (posts) {
       dispatch(addPost(posts));
@@ -38,12 +52,13 @@ const PostList: React.FC = () => {
   }, [posts, dispatch]);
 
   if (isLoading) return <PostSkeleton />;
+  if (error) return <Typography variant="body1">Failed to load posts.</Typography>;
 
   return (
     <Box sx={{ padding: 2 }}>
       {storedPosts && storedPosts.length > 0 ? (
-        storedPosts.map((postData, index) => (
-          <PostBlock key={index} data={postData} />
+        storedPosts.map((postData) => (
+          <PostCard key={postData.id} data={postData} onReload={refetch} />
         ))
       ) : (
         <Typography variant="body1">No posts available.</Typography>
