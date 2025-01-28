@@ -14,7 +14,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import MotionButton from "../../component/motion-button";
 import MotionBlock from "../../component/motion-block";
 
-// Yup validation schema
+/**
+ * Yup validation schema for song form.
+ */
 const songSchema = Yup.object({
   title: Yup.string().required("Title is required"),
   artist: Yup.string().required("Artist is required"),
@@ -24,13 +26,27 @@ const songSchema = Yup.object({
   audioUrl: Yup.mixed().required("Audio file is required"),
 });
 
+/**
+ * Props for the ManipulateDialog component.
+ * @typedef {Object} SongDialogProps
+ * @property {boolean} open - Indicates whether the dialog is open.
+ * @property {Object|null} songToEdit - The song to edit, or null for adding a new song.
+ * @property {() => void} handleCloseDialog - Function to close the dialog.
+ * @property {(data: FormData) => void} handleAddEditSong - Function to handle adding or editing a song.
+ */
 interface SongDialogProps {
   open: boolean;
   songToEdit: any;
   handleCloseDialog: () => void;
-  handleAddEditSong: (data: FormData) => void; // Update type to accept FormData
+  handleAddEditSong: (data: FormData) => void;
 }
 
+/**
+ * A dialog for adding or editing a song.
+ *
+ * @param {SongDialogProps} props - The component props.
+ * @returns {JSX.Element} The rendered dialog component.
+ */
 const ManipulateDialog: React.FC<SongDialogProps> = ({
   open,
   songToEdit,
@@ -46,7 +62,9 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
     resolver: yupResolver(songSchema),
   });
 
-  // Reset form when songToEdit changes
+  /**
+   * Resets the form when `songToEdit` changes.
+   */
   useEffect(() => {
     if (songToEdit) {
       reset(songToEdit);
@@ -62,7 +80,11 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
     }
   }, [songToEdit, reset]);
 
-  // Handle form submission and create FormData
+  /**
+   * Handles form submission, creating a FormData object.
+   *
+   * @param {Object} data - The form data.
+   */
   const onSubmit = (data: any) => {
     const formData = new FormData();
 
@@ -90,6 +112,7 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
         <DialogTitle>{songToEdit ? "Edit Song" : "Add Song"}</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+            {/* Title Field */}
             <Controller
               name="title"
               control={control}
@@ -104,6 +127,8 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
                 />
               )}
             />
+
+            {/* Artist Field */}
             <Controller
               name="artist"
               control={control}
@@ -118,6 +143,8 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
                 />
               )}
             />
+
+            {/* Album Field */}
             <Controller
               name="album"
               control={control}
@@ -132,6 +159,8 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
                 />
               )}
             />
+
+            {/* Genre Field */}
             <Controller
               name="genre"
               control={control}
@@ -146,6 +175,8 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
                 />
               )}
             />
+
+            {/* Lyrics Field */}
             <Controller
               name="lyrics"
               control={control}
@@ -160,24 +191,27 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
                 />
               )}
             />
+
+            {/* Audio File Input */}
             <Controller
               name="audioUrl"
               control={control}
-              defaultValue={null} // Default value for file input
               render={({ field }) => (
                 <TextField
-                  {...field}
                   type="file"
                   inputProps={{ accept: ".mp3, .wav" }}
                   fullWidth
                   error={!!errors.audioUrl}
                   helperText={errors.audioUrl?.message}
                   sx={{ marginBottom: 2 }}
-                  onChange={(e) => field.onChange(e.target.files?.[0] || null)} // Update field value with selected file
+                  onChange={(e) =>
+                    field.onChange(e.target.files?.[0] || null)
+                  } // Manages file input changes
                 />
               )}
             />
 
+            {/* Dialog Actions */}
             <DialogActions>
               <Button onClick={handleCloseDialog}>Cancel</Button>
               <MotionButton type="submit">

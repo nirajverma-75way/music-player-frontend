@@ -10,6 +10,16 @@ import {
   
   const baseQuery = fetchBaseQuery({
     baseUrl: "http://localhost:5000/api/",
+    prepareHeaders: (headers, { getState, endpoint }) => {
+      const state = getState() as RootState;
+      const token = state.auth.accessToken; // Get accessToken from your Redux states
+      // List of public endpoints where no token is required
+      if ( token) {
+        // Attach the token only for private endpoints
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   });
   
   export const baseQueryWithReauth = async (args: string | FetchArgs, api: BaseQueryApi, extraOptions: {}) => {
@@ -33,9 +43,7 @@ import {
           api,
           extraOptions
         );
-  
-        console.log(refreshResult);
-  
+    
         if (refreshResult) {
 
             api.dispatch(setTokens({...refreshResult.data, user: state.auth.user}));
