@@ -1,30 +1,120 @@
-# React + TypeScript + Vite
+# Music Player Frontend 🎵
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A feature-rich music player frontend built with **React.js** and **Material-UI**, providing a smooth and responsive user experience. Users can explore, play, and manage their favorite music while admins can upload and manage playlists.
 
-Currently, two official plugins are available:
+## 🌟 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### User Features
+- 🎶 **Play Music**: Stream songs with a seamless audio player.
+- ❤️ **Like Songs**: Save favorite songs to your liked list.
+- 📋 **Create Playlists**: Organize songs into personalized playlists.
+- ⬇️ **Offline Mode**: Download songs for offline listening.
 
-## Expanding the ESLint configuration
+### Admin Features
+- 📤 **Upload Music**: Add new songs with metadata (artist, genre, album, etc.).
+- 📜 **Add Lyrics**: Provide lyrics for songs.
+- 🎛️ **Manage Playlists**: Create and edit curated playlists.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+---
 
-- Configure the top-level `parserOptions` property like this:
+## 🚀 Tech Stack
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-    project: ["./tsconfig.json", "./tsconfig.node.json"],
-    tsconfigRootDir: __dirname,
-  },
-};
+### Frontend
+- **React.js**: Component-based UI development.
+- **Material-UI**: Pre-designed, customizable components for responsive design.
+- **Framer Motion**: Smooth animations and transitions.
+- **React Router**: Seamless navigation across pages.
+- **React Hook Form**: Easy and extensible form validation.
+- **Yup**: Schema-based form validation.
+
+### State Management
+- **React Context**: Manage global state (e.g., authentication, player state).
+
+### Backend (Companion Project)
+- Built with **Node.js** and **MongoDB**. [Check the backend repository](https://github.com/nirajverma-75way/music-player-backend).
+
+---
+
+## 🔧 Installation & Setup
+
+### Prerequisites
+- **Node.js** (v14+)
+- **npm** or **yarn**
+
+### Steps to Run Locally
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/nirajverma-75way/music-player-frontend.git
+   cd music-player-frontend
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Start the Development Server**
+   ```bash
+   npm start
+   # or
+   yarn start
+   ```
+
+4. **Access the Application**
+   - Open your browser and navigate to `http://localhost:5173`.
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the root directory and configure the following variables:
+
+```
+REACT_APP_API_URL=your_backend_api_url
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+---
+
+## 🧪 Testing
+
+To run tests for the project:
+
+```bash
+npm test
+# or
+yarn test
+```
+
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/music-player-frontend/issues).
+
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/YourFeature`).
+3. Commit your changes (`git commit -m 'Add YourFeature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a pull request.
+
+---
+
+## 📧 Contact
+
+For any inquiries, reach out at **nkverma02310@gmail.com**.
+
+---
+
+### 🙏 Acknowledgments
+Thanks to the open-source community and the developers behind **React**, **Material-UI**, and **Framer Motion** for making this project possible.
+
