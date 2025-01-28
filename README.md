@@ -7,8 +7,6 @@ A feature-rich music player frontend built with **React.js** and **Material-UI**
 ### User Features
 - 🎶 **Play Music**: Stream songs with a seamless audio player.
 - ❤️ **Like Songs**: Save favorite songs to your liked list.
-- 📋 **Create Playlists**: Organize songs into personalized playlists.
-- ⬇️ **Offline Mode**: Download songs for offline listening.
 
 ### Admin Features
 - 📤 **Upload Music**: Add new songs with metadata (artist, genre, album, etc.).
