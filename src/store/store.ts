@@ -1,23 +1,23 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import authReducer from "./reducers/authReducer";
-import postReducer from "./reducers/postReducer";
+import songReducer from "./reducers/songReducer";
+import playlistReducer from "./reducers/playlistReducer";
 import { apiUser } from "../services/user.api";
-import { apiPost } from "../services/post.api";
-import { apiLike } from "../services/like.api";
-import { apiComment } from "../services/comment.api";
+import { apiSong } from "../services/song.api";
+import { apiPlaylist } from "../services/playlist.api";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     [apiUser.reducerPath]: apiUser.reducer,
-    post: postReducer,
-    [apiPost.reducerPath]: apiPost.reducer,
-    [apiLike.reducerPath]: apiLike.reducer,
-    [apiComment.reducerPath]: apiComment.reducer
+    song: songReducer,
+    [apiSong.reducerPath]: apiSong.reducer,
+    playlist: playlistReducer,
+    [apiPlaylist.reducerPath]: apiPlaylist.reducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiUser.middleware).concat(apiPost.middleware).concat(apiLike.middleware).concat(apiComment.middleware),
+    getDefaultMiddleware().concat(apiUser.middleware).concat(apiSong.middleware).concat(apiPlaylist.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

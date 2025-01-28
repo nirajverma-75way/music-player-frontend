@@ -1,3 +1,14 @@
+/**
+ * Authentication Component that handles user login, registration, forgot password, and reset password functionality.
+ * 
+ * The component uses React Hook Form and Yup for form validation, Material UI for UI components, and Framer Motion for animations.
+ * 
+ * @component
+ * @example
+ * // Usage
+ * <Authenticate />
+ */
+
 import React, { useState } from "react";
 import {
   Grid,
@@ -5,22 +16,22 @@ import {
   Button,
   Typography,
   Box,
-  Paper,
-  Link,
+  Paper
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import {
-  useCreateUserMutation,
-  useLoginUserMutation,
-} from "../../services/user.api";
+import { motion, AnimatePresence } from "framer-motion"; // Import Framer Motion
+import { useCreateUserMutation, useForgotPasswordMutation, useLoginUserMutation, useResetPasswordMutation } from "../../services/user.api";
 import { toast } from "react-toastify";
 import { setTokens } from "../../store/reducers/authReducer";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 // Validation schemas
+/**
+ * Login schema validation using Yup
+ */
 const loginSchema = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup
@@ -29,6 +40,9 @@ const loginSchema = yup.object({
     .required("Password is required"),
 });
 
+/**
+ * Registration schema validation using Yup
+ */
 const registerSchema = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
   name: yup.string().required("Name is required"),
@@ -43,11 +57,41 @@ const registerSchema = yup.object({
     .required("Confirm Password is required"),
 });
 
+/**
+ * Forgot password schema validation using Yup
+ */
 const forgotPasswordSchema = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
 });
 
+/**
+ * Reset password schema validation using Yup
+ */
+const resetPasswordSchema = yup.object({
+  code: yup.string().min(6, "code must be at least 6 characters"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
+});
+
 // Form Input Component
+/**
+ * Form Input Component for rendering input fields with validation
+ * 
+ * @param {Object} props - The component props
+ * @param {string} props.name - The name of the input field
+ * @param {string} props.label - The label of the input field
+ * @param {string} [props.type="text"] - The input type (text, password, etc.)
+ * @param {Object} props.control - The control object from react-hook-form
+ * @param {Object} props.errors - Validation errors from react-hook-form
+ * 
+ * @returns {React.Element} The FormInput component
+ */
 const FormInput: React.FC<{
   name: string;
   label: string;
@@ -74,22 +118,48 @@ const FormInput: React.FC<{
   />
 );
 
+// Animation Variants
+/**
+ * Animation variants for form transitions using Framer Motion
+ */
+const formVariants = {
+  initial: { opacity: 0, x: 50 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -50 },
+};
+
+/**
+ * Button animation variants for hover and tap effects using Framer Motion
+ */
+const buttonVariants = {
+  hover: { scale: 1.05 },
+  tap: { scale: 0.95 },
+};
+
 // Authentication component
+/**
+ * Main authentication component handling login, registration, password reset, and more.
+ * 
+ * @returns {React.Element} The Authenticate component
+ */
 const Authenticate: React.FC = () => {
-  const [formType, setFormType] = useState<
-    "login" | "register" | "forgotPassword"
-  >("login");
+  const [searchParams] = useSearchParams();
+  const token: string = searchParams.get("token")?.toString() || "";
+  const [formType, setFormType] = useState<"login" | "register" | "forgotPassword" | "resetPassword">(token !== "" ? "resetPassword" : "login");
   const [loginUser] = useLoginUserMutation();
   const [createUser] = useCreateUserMutation();
+  const [forgotPassword] = useForgotPasswordMutation();
+  const [resetPassword] = useResetPasswordMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const schema =
     formType === "login"
       ? loginSchema
       : formType === "register"
-      ? registerSchema
-      : forgotPasswordSchema;
+      ? registerSchema 
+      : formType === "forgotPassword" 
+      ? forgotPasswordSchema 
+      : resetPasswordSchema;
 
   const {
     control,
@@ -99,9 +169,12 @@ const Authenticate: React.FC = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = async (
-    data: LoginFormInputs | RegisterFormInputs | ForgotPasswordFormInputs
-  ) => {
+  /**
+   * Submit handler for forms. Depending on the form type, it triggers appropriate API actions.
+   * 
+   * @param {Object} data - The form data
+   */
+  const onSubmit = async (data: any) => {
     if (formType === "login") {
       try {
         const response: IResponse = await loginUser(data).unwrap();
@@ -111,7 +184,7 @@ const Authenticate: React.FC = () => {
           localStorage.setItem("accessToken", response.data.accessToken);
           localStorage.setItem("refreshToken", response.data.refreshToken);
           localStorage.setItem("user", JSON.stringify(response.data.user));
-          navigate("/post");
+          navigate("/songs");
         } else {
           toast.error(response.message);
         }
@@ -133,17 +206,33 @@ const Authenticate: React.FC = () => {
         toast.error("Registration failed. Please try again.");
       }
     }
+
     if (formType === "forgotPassword") {
       try {
-        const response: IResponse = await createUser(data).unwrap();
+        const response: IResponse = await forgotPassword(data).unwrap();
         if (response.success) {
           toast.success(response.message);
-          setFormType("login");
+          setFormType("resetPassword");
         } else {
           toast.error(response.message);
         }
       } catch (error) {
-        toast.error("Registration failed. Please try again.");
+        toast.error("Failed to reset password. Please try again.");
+      }
+    }
+    if (formType === "resetPassword") {
+      try {
+        
+        const response: IResponse = await resetPassword({...data, token}).unwrap();
+        if (response.success) {
+          toast.success(response.message);
+          if(response.data)
+            setFormType("login");
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error("Failed to reset password. Please try again.");
       }
     }
   };
@@ -153,40 +242,31 @@ const Authenticate: React.FC = () => {
       header: "Login",
       form: (
         <>
-          <FormInput
-            name="email"
-            label="Email Address"
-            control={control}
-            errors={errors}
-          />
-          <FormInput
-            name="password"
-            label="Password"
-            type="password"
-            control={control}
-            errors={errors}
-          />
-          <Button
+          <FormInput name="email" label="Email Address" control={control} errors={errors} />
+          <FormInput name="password" label="Password" type="password" control={control} errors={errors} />
+          <motion.button
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
             type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            style={{
+              marginTop: 16,
+              marginBottom: 16,
+              width: "100%",
+              padding: "12px",
+              border: "none",
+              borderRadius: "8px",
+              backgroundColor: "#1976d2",
+              color: "white",
+              cursor: "pointer",
+            }}
           >
             Login
+          </motion.button>
+          <Button fullWidth variant="text" onClick={() => setFormType("forgotPassword")}>
+            Forget Password?
           </Button>
-          {/**<Link
-            href="#"
-            onClick={() => setFormType("forgotPassword")}
-            variant="body2"
-            sx={{ display: "block", textAlign: "center", mb: 2 }}
-          >
-            Forgot Password?
-          </Link>*/}
-          <Button
-            fullWidth
-            variant="text"
-            onClick={() => setFormType("register")}
-          >
+          <Button fullWidth variant="text" onClick={() => setFormType("register")}>
             Don't have an account? Register
           </Button>
         </>
@@ -196,46 +276,30 @@ const Authenticate: React.FC = () => {
       header: "Register",
       form: (
         <>
-          <FormInput
-            name="name"
-            label="Full Name"
-            control={control}
-            errors={errors}
-          />
-          <FormInput
-            name="username"
-            label="Username"
-            control={control}
-            errors={errors}
-          />
-          <FormInput
-            name="email"
-            label="Email Address"
-            control={control}
-            errors={errors}
-          />
-          <FormInput
-            name="password"
-            label="Password"
-            type="password"
-            control={control}
-            errors={errors}
-          />
-          <FormInput
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            control={control}
-            errors={errors}
-          />
-          <Button
+          <FormInput name="name" label="Full Name" control={control} errors={errors} />
+          <FormInput name="username" label="Username" control={control} errors={errors} />
+          <FormInput name="email" label="Email Address" control={control} errors={errors} />
+          <FormInput name="password" label="Password" type="password" control={control} errors={errors} />
+          <FormInput name="confirmPassword" label="Confirm Password" type="password" control={control} errors={errors} />
+          <motion.button
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
             type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            style={{
+              marginTop: 16,
+              marginBottom: 16,
+              width: "100%",
+              padding: "12px",
+              border: "none",
+              borderRadius: "8px",
+              backgroundColor: "#1976d2",
+              color: "white",
+              cursor: "pointer",
+            }}
           >
             Register
-          </Button>
+          </motion.button>
           <Button fullWidth variant="text" onClick={() => setFormType("login")}>
             Already have an account? Login
           </Button>
@@ -246,20 +310,58 @@ const Authenticate: React.FC = () => {
       header: "Forgot Password",
       form: (
         <>
-          <FormInput
-            name="email"
-            label="Email Address"
-            control={control}
-            errors={errors}
-          />
-          <Button
+          <FormInput name="email" label="Email Address" control={control} errors={errors} />
+          <motion.button
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
             type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            style={{
+              marginTop: 16,
+              marginBottom: 16,
+              width: "100%",
+              padding: "12px",
+              border: "none",
+              borderRadius: "8px",
+              backgroundColor: "#1976d2",
+              color: "white",
+              cursor: "pointer",
+            }}
+          >
+            Send Code
+          </motion.button>
+          <Button fullWidth variant="text" onClick={() => setFormType("login")}>
+            Back to Login
+          </Button>
+        </>
+      ),
+    },
+    resetPassword: {
+      header: "Reset Password",
+      form: (
+        <>
+          <FormInput name="code" label="Code" control={control} errors={errors} />
+          <FormInput name="password" label="Password" type="password" control={control} errors={errors} />
+          <FormInput name="confirmPassword" label="Confirm Password" type="password" control={control} errors={errors} />
+          <motion.button
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            type="submit"
+            style={{
+              marginTop: 16,
+              marginBottom: 16,
+              width: "100%",
+              padding: "12px",
+              border: "none",
+              borderRadius: "8px",
+              backgroundColor: "#1976d2",
+              color: "white",
+              cursor: "pointer",
+            }}
           >
             Reset Password
-          </Button>
+          </motion.button>
           <Button fullWidth variant="text" onClick={() => setFormType("login")}>
             Back to Login
           </Button>
@@ -293,16 +395,24 @@ const Authenticate: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <Typography component="h1" variant="h5">
-            {formContent[formType].header}
-          </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            sx={{ mt: 1, width: "100%", maxWidth: "400px" }}
-          >
-            {formContent[formType].form}
-          </Box>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={formType}
+              variants={formVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ duration: 0.3 }}
+              style={{ width: "100%", maxWidth: "400px" }}
+            >
+            <Typography component="h1" variant="h5">
+              {formContent[formType].header}
+            </Typography>
+              <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
+                {formContent[formType].form}
+              </Box>
+            </motion.div>
+          </AnimatePresence>
         </Box>
       </Grid>
     </Grid>

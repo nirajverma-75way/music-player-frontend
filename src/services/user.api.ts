@@ -1,21 +1,12 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "../store/store";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithReauth } from "./api";
 
 export const apiUser = createApi({
   reducerPath: "apiUser",
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5000/api/', // Replace with your API base URL
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.accessToken; // Replace 'auth.token' with the correct path to your token in the state
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     getUserById: builder.query<User, string>({
-      query: (id) => `users/${id}`,
+      query: (id) => `users/${id}`
     }),
     getUsers: builder.query<User, string>({
       query: () => 'users',
@@ -34,16 +25,31 @@ export const apiUser = createApi({
         body: newUser,
       }),
     }),
+    forgotPassword: builder.mutation<{email: string}, {email: string}>({
+      query: (newUser) => ({
+        url: 'users/forgot-password',
+        method: 'POST',
+        body: newUser,
+      }),
+    }),
+    resetPassword: builder.mutation<{code: string, password: string, token: string}, {email: string, password: string, token: string}>({
+      query: (newUser) => ({
+        url: 'users/reset-password',
+        method: 'POST',
+        body: newUser,
+        headers:{'Authorization': `Bearer ${newUser?.token}`}
+      }),
+    }),
     updateUser: builder.mutation<User, Partial<User>>({
       query: (updatedUser) => ({
-        url: `users/${updatedUser.id}`,
+        url: `users/${updatedUser._id}`,
         method: 'PUT',
         body: updatedUser,
       }),
     }),
     patchUser: builder.mutation<User, Partial<User>>({
       query: (updatedUser) => ({
-        url: `users/${updatedUser.id}`,
+        url: `users/${updatedUser._id}`,
         method: 'PATCH',
         body: updatedUser,
       }),
@@ -51,4 +57,4 @@ export const apiUser = createApi({
   }),
 });
 
-export const { useGetUserByIdQuery, useGetUsersQuery, useCreateUserMutation, useLoginUserMutation, useUpdateUserMutation, usePatchUserMutation } = apiUser;
+export const { useGetUserByIdQuery, useGetUsersQuery, useCreateUserMutation, useForgotPasswordMutation, useResetPasswordMutation, useLoginUserMutation, useUpdateUserMutation, usePatchUserMutation } = apiUser;
