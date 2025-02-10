@@ -15,9 +15,9 @@ import {
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import { motion } from "framer-motion";
-import MotionButton from "../../component/motion-button";
-import MotionBlock from "../../component/motion-block";
-import TableSkeleton from "../../component/table-skeleton";
+import MotionButton from "../../component/Animation/motion-button";
+import MotionBlock from "../../component/Animation/motion-block";
+import TableSkeleton from "../../component/Skeleton/table-skeleton";
 import ManipulateDialog from "./manipulate";
 import ConfirmDeleteDialog from "./confirmDelete";
 import {
@@ -32,7 +32,7 @@ import { toast } from "react-toastify";
 
 /**
  * SongsPage component for displaying a list of songs, adding new songs, editing, and deleting existing songs.
- * 
+ *
  * @returns {JSX.Element} - The rendered SongsPage component.
  */
 const SongsPage = () => {
@@ -61,7 +61,7 @@ const SongsPage = () => {
 
   /**
    * Opens the song manipulation dialog to add or edit a song.
-   * 
+   *
    * @param {Song} [song] - Optional song object to edit.
    */
   const handleOpenDialog = (song?: Song) => {
@@ -79,7 +79,7 @@ const SongsPage = () => {
 
   /**
    * Handles the process of adding or editing a song.
-   * 
+   *
    * @param {Song} data - The song data to be added or edited.
    */
   const handleAddEditSong = async (data: Song) => {
@@ -167,9 +167,7 @@ const SongsPage = () => {
                       <TableCell>{song.lyrics}</TableCell>
                       <TableCell>
                         <Tooltip title="Edit">
-                          <IconButton
-                            onClick={() => handleOpenDialog(song)}
-                          >
+                          <IconButton onClick={() => handleOpenDialog(song)}>
                             <Edit />
                           </IconButton>
                         </Tooltip>

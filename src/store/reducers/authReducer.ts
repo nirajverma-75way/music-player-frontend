@@ -12,10 +12,10 @@ interface AuthState {
 
 // Define the initial state using that type
 const initialState: AuthState = {
-  accessToken:  localStorage.getItem("accessToken") || "",
+  accessToken: localStorage.getItem("accessToken") || "",
   refreshToken: localStorage.getItem("refreshToken") || "",
   user: localStorage.getItem("user") || {},
-  isAuthenticated: false,
+  isAuthenticated: localStorage.getItem("user") ? true : false,
   loading: true,
 };
 

@@ -19,7 +19,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useGetSongsQuery } from "../../services/song.api";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { addSong } from "../../store/reducers/songReducer";
-import MotionButton from "../../component/motion-button";
+import MotionButton from "../../component/Animation/motion-button";
 
 // Form validation schema
 const playlistSchema = Yup.object().shape({
@@ -29,7 +29,7 @@ const playlistSchema = Yup.object().shape({
 
 /**
  * Props interface for ManipulateDialog component.
- * 
+ *
  * @interface PlaylistDialogProps
  * @property {boolean} open - Whether the dialog is open.
  * @property {any} playlistToEdit - The playlist data to edit (if any).
@@ -45,10 +45,10 @@ interface PlaylistDialogProps {
 
 /**
  * ManipulateDialog component used for adding or editing a playlist.
- * 
+ *
  * Displays a form where users can input playlist details, select songs,
  * and save changes to the playlist.
- * 
+ *
  * @param {PlaylistDialogProps} props - The props for the dialog component.
  * @returns {JSX.Element} The ManipulateDialog component.
  */
@@ -98,17 +98,19 @@ const ManipulateDialog: React.FC<PlaylistDialogProps> = ({
 
   /**
    * Handles the selection of songs in the playlist dialog.
-   * 
+   *
    * @param {React.ChangeEvent<{ value: unknown }>} event - The change event for selecting songs.
    */
-  const handleSongSelection = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleSongSelection = (
+    event: React.ChangeEvent<{ value: unknown }>
+  ) => {
     const value = event.target.value;
     setSelectedSongs(value as any[]);
   };
 
   /**
    * Handles saving the playlist, whether it's adding a new playlist or updating an existing one.
-   * 
+   *
    * @param {Partial<Playlist>} data - The playlist data to save.
    */
   const handleSavePlaylist = (data: Partial<Playlist>) => {

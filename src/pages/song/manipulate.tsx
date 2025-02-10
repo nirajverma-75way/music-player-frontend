@@ -11,8 +11,9 @@ import { Controller } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import MotionButton from "../../component/motion-button";
-import MotionBlock from "../../component/motion-block";
+import MotionButton from "../../component/Animation/motion-button";
+import MotionBlock from "../../component/Animation/motion-block";
+import FileUploader from "../../component/FileUploader";
 
 /**
  * Yup validation schema for song form.
@@ -143,7 +144,6 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
                 />
               )}
             />
-
             {/* Album Field */}
             <Controller
               name="album"
@@ -187,6 +187,8 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
                   fullWidth
                   multiline
                   rows={4}
+                  error={!!errors.lyrics}
+                  helperText={errors.lyrics?.message}
                   sx={{ marginBottom: 2 }}
                 />
               )}
@@ -197,16 +199,18 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
               name="audioUrl"
               control={control}
               render={({ field }) => (
-                <TextField
-                  type="file"
-                  inputProps={{ accept: ".mp3, .wav" }}
-                  fullWidth
+                <FileUploader
+                  label="Audio File"
+                  accept={{ "audio/*": [] }} // Accept audio file types like .mp3, .wav
+                  isMultiple={false}
+                  onDropFile={(acceptedFiles) => {
+                    // Ensure only one file is selected
+                    if (acceptedFiles?.length > 0) {
+                      field.onChange(acceptedFiles[0]); // Set the first file
+                    }
+                  }}
                   error={!!errors.audioUrl}
                   helperText={errors.audioUrl?.message}
-                  sx={{ marginBottom: 2 }}
-                  onChange={(e) =>
-                    field.onChange(e.target.files?.[0] || null)
-                  } // Manages file input changes
                 />
               )}
             />

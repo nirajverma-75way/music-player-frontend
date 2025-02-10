@@ -15,9 +15,9 @@ import {
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import ManipulateDialog from "./manipulate"; // Import the ManipulateDialog component
-import MotionBlock from "../../component/motion-block";
-import MotionButton from "../../component/motion-button";
-import TableSkeleton from "../../component/table-skeleton";
+import MotionBlock from "../../component/Animation/motion-block";
+import MotionButton from "../../component/Animation/motion-button";
+import TableSkeleton from "../../component/Skeleton/table-skeleton";
 import {
   useCreatePlaylistMutation,
   useDeletePlaylistMutation,
@@ -32,10 +32,10 @@ import ConfirmDeleteDialog from "./confirmDelete";
 
 /**
  * PlaylistPage Component
- * 
+ *
  * Displays the list of playlists, allows users to add, edit, and delete playlists.
  * Also handles the interactions with the backend API for managing playlists.
- * 
+ *
  * @returns {JSX.Element} The PlaylistPage component with functionalities to add, edit, and delete playlists.
  */
 const PlaylistPage = () => {
@@ -67,7 +67,7 @@ const PlaylistPage = () => {
 
   /**
    * Opens the dialog for adding or editing a playlist.
-   * 
+   *
    * @param {Playlist} [playlist] - The playlist to edit (optional).
    */
   const handleOpenDialog = (playlist?: Playlist) => {
@@ -85,7 +85,7 @@ const PlaylistPage = () => {
 
   /**
    * Handles adding or editing a playlist.
-   * 
+   *
    * @param {Playlist} data - The playlist data to add or update.
    */
   const handleAddEditPlaylist = async (data: Playlist) => {
