@@ -11,18 +11,19 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ role }) => {
   return (
     <Box sx={{ display: "flex" }}>
-      <Sidebar role={role} />
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          bgcolor: "background.default",
-          padding: 3,
-          marginLeft: "250px", // Ensure this aligns with your sidebar width
-        }}
-      >
-        <Outlet />
-      </Box>
+      <Sidebar role={role}>
+        <Box
+          component="main"
+          sx={{
+            backgroundColor: "red",
+            flexGrow: 1,
+            bgcolor: "background.default",
+            padding: 3,
+          }}
+        >
+          <Outlet />
+        </Box>
+      </Sidebar>
     </Box>
   );
 };

@@ -2,22 +2,9 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
-  IconButton,
-  Tooltip,
-  Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
 } from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
-import { motion } from "framer-motion";
 import MotionButton from "../../component/Animation/motion-button";
 import MotionBlock from "../../component/Animation/motion-block";
-import TableSkeleton from "../../component/Skeleton/table-skeleton";
 import ManipulateDialog from "./manipulate";
 import ConfirmDeleteDialog from "./confirmDelete";
 import {
@@ -29,12 +16,19 @@ import {
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { addSong } from "../../store/reducers/songReducer";
 import { toast } from "react-toastify";
+import DataTable from "../../component/DataTable";
 
 /**
  * SongsPage component for displaying a list of songs, adding new songs, editing, and deleting existing songs.
  *
  * @returns {JSX.Element} - The rendered SongsPage component.
  */
+
+interface Column {
+  field: string;
+  label: string;
+  type?: "text" | "audio" | "video" | "image" | "file";
+}
 const SongsPage = () => {
   const {
     data: songs,
@@ -119,9 +113,18 @@ const SongsPage = () => {
     setSongToDelete(null);
   };
 
+  const columns: Column[] = [
+    { field: "title", label: "Title" },
+    { field: "artist", label: "Artist" },
+    { field: "album", label: "Album" },
+    { field: "genre", label: "Genre" },
+    { field: "lyrics", label: "Lyrics" },
+    { field: "audioUrl", label: "Audio", type: "audio" },
+  ];
+
   return (
     <MotionBlock>
-      <Box px={3} sx={{ maxWidth: "1200px", margin: "0 auto" }}>
+      <Box sx={{ margin: "0 auto" }}>
         <Box
           my={2}
           sx={{
@@ -138,68 +141,16 @@ const SongsPage = () => {
           </MotionButton>
         </Box>
 
-        {isLoading && <TableSkeleton column={5} />}
-        {/* Table to display songs */}
-        {!isLoading && (
-          <Grid container spacing={2}>
-            <TableContainer
-              component={Paper}
-              sx={{ boxShadow: 3, borderRadius: 2 }}
-            >
-              <Table sx={{ minWidth: 650 }} aria-label="songs table">
-                <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-                  <TableRow>
-                    <TableCell>Title</TableCell>
-                    <TableCell>Artist</TableCell>
-                    <TableCell>Album</TableCell>
-                    <TableCell>Genre</TableCell>
-                    <TableCell>Lyrics</TableCell>
-                    <TableCell>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {storedSongs.map((song) => (
-                    <TableRow key={song._id}>
-                      <TableCell>{song.title}</TableCell>
-                      <TableCell>{song.artist}</TableCell>
-                      <TableCell>{song.album}</TableCell>
-                      <TableCell>{song.genre}</TableCell>
-                      <TableCell>{song.lyrics}</TableCell>
-                      <TableCell>
-                        <Tooltip title="Edit">
-                          <IconButton onClick={() => handleOpenDialog(song)}>
-                            <Edit />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Delete">
-                          <IconButton
-                            onClick={() => {
-                              setSongToDelete(song);
-                              setOpenConfirmDelete(true);
-                            }}
-                          >
-                            <Delete />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              {storedSongs.length === 0 && (
-                <Typography
-                  variant="h6"
-                  component="h6"
-                  gutterBottom
-                  sx={{ justifySelf: "center", padding: "10px" }}
-                >
-                  No Songs available
-                </Typography>
-              )}
-            </TableContainer>
-          </Grid>
-        )}
-
+        <DataTable
+          columns={columns}
+          data={storedSongs}
+          isLoading={isLoading}
+          onEdit={handleOpenDialog}
+          onDelete={(song) => {
+            setSongToDelete(song);
+            setOpenConfirmDelete(true);
+          }}
+        />
         {/* Song Dialog */}
         <ManipulateDialog
           open={openDialog}

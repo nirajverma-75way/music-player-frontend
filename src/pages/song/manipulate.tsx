@@ -68,6 +68,7 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
    */
   useEffect(() => {
     if (songToEdit) {
+      console.log(songToEdit)
       reset(songToEdit);
     } else {
       reset({
@@ -76,7 +77,7 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
         album: "",
         genre: "",
         lyrics: "",
-        audioUrl: null, // Default null for file input
+        audioUrl: undefined, // Default undefined for file input
       });
     }
   }, [songToEdit, reset]);
@@ -203,6 +204,7 @@ const ManipulateDialog: React.FC<SongDialogProps> = ({
                   label="Audio File"
                   accept={{ "audio/*": [] }} // Accept audio file types like .mp3, .wav
                   isMultiple={false}
+                  defaultFileUrl={songToEdit?.audioUrl}
                   onDropFile={(acceptedFiles) => {
                     // Ensure only one file is selected
                     if (acceptedFiles?.length > 0) {

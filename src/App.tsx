@@ -5,6 +5,7 @@ import ProtectedRoute from "./component/protectedRoute";
 import Loading from "./component/loading";
 import Layout from "./layouts/layout";
 import LazyComponent from "./component/LazyComponent";
+import NotFoundPage from "./pages/notFoundPage";
 
 const HomePage = React.lazy(() => import("./pages/homepage"));
 const Authenticate = React.lazy(() => import("./pages/authenticate"));
@@ -23,6 +24,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/songs" element={<LazyComponent><SongPage /></LazyComponent>} />
           <Route path="/playlists" element={<LazyComponent><PlaylistPage /></LazyComponent>} />
+          <Route path="/*" element={<LazyComponent><NotFoundPage /></LazyComponent>} />
         </Route>
       </Routes>
     </Suspense>
