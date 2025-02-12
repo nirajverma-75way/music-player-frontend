@@ -18,7 +18,7 @@ const Layout: React.FC<LayoutProps> = ({ role }) => {
             backgroundColor: "red",
             flexGrow: 1,
             bgcolor: "background.default",
-            padding: 3,
+            padding: { xs: '30px 5px', md: 3 },
           }}
         >
           <Outlet />

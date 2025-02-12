@@ -143,7 +143,8 @@ const Sidebar: React.FC<SidebarProps> = ({ role, children }) => {
       <Box
         sx={{
           flexGrow: 1,
-          padding: "20px", // Adjust content based on sidebar visibility
+          padding: { sm: '20px 0', md: "20px" },
+          width: '100%'
         }}
       >
         {children}
